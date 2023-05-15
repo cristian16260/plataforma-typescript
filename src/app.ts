@@ -1,21 +1,27 @@
-import express,{ Request, Response } from 'express'
+import express from 'express'
 import mongoose from 'mongoose'
 import userrouter from './routers/routeruser'
+import dotenv from 'dotenv';
+dotenv.config({
+    path: '../.env',
+});
 
 const app = express()
-let port: number = 3000
+const PORT = process.env.PORT || 3000
+
+const database = String(process.env.MONGODB_URI || 'mongo');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use('/api/v1/user',userrouter)
 
 const mongodb = () => {
-    mongoose.connect('mongodb+srv://cmrcristian26:passwordmongo98@cluster0.wwavevr.mongodb.net/plataforma')
-    console.log('connect mongo')
+    mongoose.connect(database)
+    console.log('database open')
 }
 mongodb()
 
-app.listen(port, () => {
-    console.log(`app listen ${port}`)
+app.listen(PORT, () => {
+    console.log(`app listen ${PORT}`)
 })
 

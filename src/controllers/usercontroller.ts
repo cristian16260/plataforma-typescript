@@ -1,7 +1,13 @@
 import { Users } from '../modules/users'
 import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv';
 
-export const register = async (req: Request, res: Response) => {
+dotenv.config({
+  path: './.env',
+});
+
+export const register = async (req: Request, res: Response) => {      
     try {
         const {name, last_name, dni, email, carrera, password, passwordConfirm} = req.body
 
@@ -15,9 +21,12 @@ export const register = async (req: Request, res: Response) => {
             passwordConfirm,
         })
         await user.save()
+        const accesstoken = String(jwt.sign({email: user.email}, process.env.SECRET || 'token'));
+        res.header('authorization', accesstoken)
         res.json({
             status: 'success',
             message: 'User successfully registered',
+            token: accesstoken,
             data: [{
                 name,
                 last_name,
